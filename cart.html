@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Cart - Nora Tech</title>
+    <link rel="stylesheet" href="cart.css">
+</head>
+<body>
+    <header>
+        <h1>Nora Tech</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="new-arrival.html">New Arrivals</a></li>
+                <li><a href="#">Sale</a></li>
+                <li><a href="#">Contact</a></li>
+                <li><a href="cart.html" id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <section class="cart">
+            <h2>Your Cart</h2>
+            <div id="cart-items">
+                <!-- Cart items will be populated here -->
+            </div>
+            <div id="cart-summary">
+                <p>Total Items: <span id="total-items">0</span></p>
+                <p>Total Price: <span id="total-price">$0</span></p>
+                <button id="checkout-btn">Checkout</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Nora Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        const productImages = {
+            'Laptop': 'laptop.jpg',
+            'Smartphone': 'smartphone.jpg',
+            'Headphones': 'headphones.jpg',
+            'Smartwatch': 'smartwatch.jpg',
+            'Keyboard': 'keyboard.jpg',
+            'Hp-Laptop': 'hplaptop.jpg',
+            'Speaker': 'Speaker.jpg',
+            'Virual_Reality': 'vr.jpg',
+            'Bluetooth': 'Bluetooth.jpg',
+        };
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById("cart-items");
+            const totalItems = document.getElementById("total-items");
+            const totalPrice = document.getElementById("total-price");
+            let total = 0;
+
+            cartItemsDiv.innerHTML = ""; // Clear the cart items list
+
+            cart.forEach(item => {
+                const cartItem = document.createElement("div");
+                cartItem.classList.add("cart-item");
+                cartItem.innerHTML = `
+                    <div class="cart-item-image" style="background-image: url(${productImages[item.name] || 'default.jpg'});"></div>
+                    <p>${item.name} - $${item.price}</p>
+                    <button onclick="removeFromCart('${item.name}')">Remove</button>&nbsp;
+                    <button onclick="buyNow('${item.name}', ${item.price}, '${productImages[item.name]}')" style="background-color: orange;">Buy Now</button>
+                `;
+                cartItemsDiv.appendChild(cartItem);
+                total += item.price;
+            });
+
+            totalItems.textContent = cart.length;
+            totalPrice.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(productName) {
+            cart = cart.filter(item => item.name !== productName);  // Remove the item
+            localStorage.setItem('cart', JSON.stringify(cart));  // Update localStorage
+            updateCart();
+        }
+
+        function buyNow(productName, productPrice, productImage) {
+            // Redirect to the "Buy Now" page with product details
+            const productDescription = getProductDescription(productName);  // Use the same description as in the "Buy Now" page
+            window.location.href = `buy.html?product=${productName}&price=${productPrice}&image=${productImage}&description=${productDescription}`;
+        }
+
+        function getProductDescription(productName) {
+            // Define a simple description for each product
+            const descriptions = {
+                'Laptop': 'High performance laptop with the latest technology.',
+                'Smartphone': 'Latest model with great camera and performance.',
+                'Headphones': 'Noise-cancelling headphones with superior sound quality.',
+                'Smartwatch': 'Stylish smartwatch with fitness tracking features.',
+                'Keyboard': 'Mechanical keyboard for optimal typing experience.',
+                'Hp-Laptop': 'High performance laptop with the latest technology.',
+            };
+            return descriptions[productName] || 'No description available';
+        }
+
+        window.onload = updateCart;
+    </script>
+</body>
+</html>

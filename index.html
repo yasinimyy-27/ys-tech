@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nora Tech - Multi-Service Platform</title>
+    <link rel="stylesheet" href="index.css">
+    <link rel="icon" href="Nora_Tech_Transparent_Logo.png">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Nora Tech</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="new-arrival.html">New Arrivals</a></li>
+                <li><a href="#">Sale</a></li>
+                <li><a href="#">Contact</a></li>
+                <li>
+                    <input type="text" id="search" placeholder="Search products..." oninput="searchProduct()">
+                    <button onclick="searchProduct()">Search</button>
+                </li>
+                <li>
+                    <a href="cart.html" id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        <section class="hero">
+            <h2>Welcome to Nora Tech Multi-Service Platform</h2>
+            <p>We offer a wide range of services including online selling, job requesting, and instrument building.</p>
+        </section>
+        <section class="featured-products">
+            <h2>Available Goods</h2>
+            <div class="product-grid" id="product-list">
+                <!-- Products will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+    <footer>
+        <p>&copy; 2025 Nora Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+        let products = [
+            {name: 'Laptop', price: 999.99, imageUrl: 'laptop.jpg'},
+            {name: 'Smartphone', price: 499.99, imageUrl: 'smartphone.jpg'},
+            {name: 'Headphones', price: 199.99, imageUrl: 'headphones.jpg'},
+            {name: 'Smartwatch', price: 129.99, imageUrl: 'smartwatch.jpg'},
+            {name: 'Keyboard', price: 49.99, imageUrl: 'keyboard.jpg'},
+            {name: 'Bluetooth', price: 80.99, imageUrl: 'Bluetooth.jpg'},
+            {name: 'Speaker', price: 30.99, imageUrl: 'Speaker.jpg'},
+            {name: 'Virual_Reality', price: 600.99, imageUrl: 'vr.jpg'},
+        ];
+
+        // Update cart count in header
+        function updateCartCount() {
+            document.getElementById("cart-count").textContent = cart.length;
+        }
+
+        // Add product to the cart
+        function addToCart(productName) {
+            const product = products.find(p => p.name === productName);
+            if (product) {
+                cart.push(product);
+                localStorage.setItem('cart', JSON.stringify(cart));
+                updateCartCount(); // Update the cart count in the header
+            }
+        }
+
+        // Display all products
+        function displayProducts(filteredProducts) {
+            const productListDiv = document.getElementById("product-list");
+            productListDiv.innerHTML = ''; // Clear previous list
+            
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("product-item");
+                productDiv.innerHTML = `
+                    <div class="product-image" style="background-image: url(${product.imageUrl});"></div>
+                    <p>${product.name} - $${product.price}</p>
+                    <button onclick="addToCart('${product.name}')">Add to Cart</button>
+                `;
+                productListDiv.appendChild(productDiv);
+            });
+        }
+
+        // Search products
+        function searchProduct() {
+            const searchQuery = document.getElementById("search").value.toLowerCase();
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+            displayProducts(filteredProducts);
+        }
+
+        // Initialize page
+        window.onload = function() {
+            displayProducts(products);
+            updateCartCount();
+        };
+    </script>
+</body>
+</html>

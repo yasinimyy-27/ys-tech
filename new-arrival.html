@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Arrivals - Nora Tech</title>
+    <link rel="stylesheet" href="new-arrivals.css">
+    <script defer src="script.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Nora Tech</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="new-arrivals.html">New Arrivals</a></li>
+                <li><a href="#">Sale</a></li>
+                <li><a href="#">Contact</a></li>
+                <li>
+                    <input type="text" id="search" placeholder="Search products..." oninput="searchProduct()">
+                    <button onclick="searchProduct()">Search</button>
+                </li>
+                <li>
+                    <a href="cart.html" id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="hero">
+            <h2>New Arrivals</h2>
+            <p>Check out our latest products!</p>
+        </section>
+        
+        <section class="product-listing">
+            <div class="product-grid" id="product-list">
+                <!-- Products will be dynamically added here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Nora Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+          let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+let products = [
+    {name: 'Hp-Laptop', price: 890.99, imageUrl: 'hplaptop.jpg'},
+    {name: 'Smartphone', price: 499.99, imageUrl: 'smartphone.jpg'},
+    {name: 'Headphones', price: 199.99, imageUrl: 'headphones.jpg'},
+    {name: 'Smartwatch', price: 129.99, imageUrl: 'smartwatch.jpg'},
+    {name: 'Keyboard', price: 49.99, imageUrl: 'keyboard.jpg'}
+];
+
+// Update cart count in header
+function updateCartCount() {
+    document.getElementById("cart-count").textContent = cart.length;
+}
+
+// Add product to the cart
+function addToCart(productName) {
+    const product = products.find(p => p.name === productName);
+    if (product) {
+        cart.push(product);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount(); // Update the cart count in the header
+    }
+}
+
+// Display all products
+function displayProducts(filteredProducts) {
+    const productListDiv = document.getElementById("product-list");
+    productListDiv.innerHTML = ''; // Clear previous list
+    
+    filteredProducts.forEach(product => {
+        const productDiv = document.createElement("div");
+        productDiv.classList.add("product-item");
+        productDiv.innerHTML = `
+            <div class="product-image" style="background-image: url(${product.imageUrl});"></div>
+            <p>${product.name} - $${product.price}</p>
+            <button onclick="addToCart('${product.name}')">Add to Cart</button>
+        `;
+        productListDiv.appendChild(productDiv);
+    });
+}
+
+// Search products
+function searchProduct() {
+    const searchQuery = document.getElementById("search").value.toLowerCase();
+    const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+    displayProducts(filteredProducts);
+}
+
+// Initialize page
+window.onload = function() {
+    displayProducts(products);
+    updateCartCount();
+};
+    </script>
+</body>
+</html>

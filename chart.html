@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cart - Nora Tech</title>
+    <link rel="stylesheet" href="index.css">
+    <script defer src="cart.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Nora Tech</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="#">New Arrivals</a></li>
+                <li><a href="#">Sale</a></li>
+                <li><a href="#">Contact</a></li>
+                <li>
+                    <input type="text" id="search" placeholder="Search products..." oninput="searchProduct()">
+                    <button onclick="searchProduct()">Search</button>
+                </li>
+                <li>
+                    <a href="cart.html" id="cart-icon">🛒 Cart (<span id="cart-count">0</span>)</a>
+                </li>
+            </ul>
+        </nav>
+    </header>
+    
+    <main>
+        <section class="cart">
+            <h2>Your Cart</h2>
+            <div id="cart-items">
+                <!-- Cart items will be populated here -->
+            </div>
+            <div id="cart-summary">
+                <p>Total Items: <span id="total-items">0</span></p>
+                <p>Total Price: <span id="total-price">$0</span></p>
+                <button id="checkout-btn">Checkout</button>
+            </div>
+        </section>
+        
+        <section class="products">
+            <h2>Available Products</h2>
+            <div id="product-list">
+                <!-- Product list will be populated here -->
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Nora Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        let products = [
+            {name: 'Laptop', price: 999.99},
+            {name: 'Smartphone', price: 499.99},
+            {name: 'Headphones', price: 199.99},
+            {name: 'Smartwatch', price: 129.99},
+            {name: 'Keyboard', price: 49.99}
+        ];
+
+        function updateCart() {
+            const cartItemsDiv = document.getElementById("cart-items");
+            const totalItems = document.getElementById("total-items");
+            const totalPrice = document.getElementById("total-price");
+            let total = 0;
+            cartItemsDiv.innerHTML = ""; // Clear the cart items list
+
+            // Render cart items
+            cart.forEach(item => {
+                const cartItem = document.createElement("div");
+                cartItem.classList.add("cart-item");
+                cartItem.innerHTML = ` 
+                    <p>${item.name} - $${item.price}</p>
+                    <button onclick="removeFromCart('${item.name}')">Remove</button>
+                `;
+                cartItemsDiv.appendChild(cartItem);
+                total += item.price;
+            });
+
+            totalItems.textContent = cart.length;
+            totalPrice.textContent = `$${total.toFixed(2)}`;
+        }
+
+        function removeFromCart(productName) {
+            cart = cart.filter(item => item.name !== productName);  // Remove the item
+            localStorage.setItem('cart', JSON.stringify(cart));  // Update localStorage
+            updateCart();  // Re-render the cart
+        }
+
+        // Handle checkout action
+        document.getElementById("checkout-btn").addEventListener("click", () => {
+            alert("Proceeding to checkout...");
+        });
+
+        // Update the cart when the page loads
+        window.onload = updateCart;
+
+        // Function to display products on the page
+        function displayProducts(filteredProducts) {
+            const productListDiv = document.getElementById("product-list");
+            productListDiv.innerHTML = ''; // Clear previous list
+            
+            filteredProducts.forEach(product => {
+                const productDiv = document.createElement("div");
+                productDiv.classList.add("product");
+                productDiv.innerHTML = `
+                    <p>${product.name} - $${product.price}</p>
+                    <button onclick="addToCart('${product.name}', ${product.price})">Add to Cart</button>
+                `;
+                productListDiv.appendChild(productDiv);
+            });
+        }
+
+        // Add a product to the cart
+        function addToCart(productName, productPrice) {
+            const product = {name: productName, price: productPrice};
+            cart.push(product);
+            localStorage.setItem('cart', JSON.stringify(cart));  // Update cart in localStorage
+            updateCart();  // Update the cart UI
+        }
+
+        // Search products based on user input
+        function searchProduct() {
+            const searchQuery = document.getElementById("search").value.toLowerCase();
+            const filteredProducts = products.filter(product => product.name.toLowerCase().includes(searchQuery));
+            displayProducts(filteredProducts);
+        }
+
+        // Display all products initially
+        displayProducts(products);
+    </script>
+</body>
+</html>

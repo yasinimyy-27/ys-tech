@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy Now - Nora Tech</title>
+    <link rel="stylesheet" href="buy.css">
+</head>
+<body>
+    <header>
+        <h1>Nora Tech - Buy Now</h1>
+        <nav>
+            <ul class="menu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="cart.html">Cart 🛒</a></li>
+                <li><a href="#">Contact</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+        <div class="main-content">
+            <div class="product-details">
+                <!-- Product image will be dynamically loaded here -->
+                <img id="product-image" src="" alt="Product Image" class="product-image">
+                <h2 id="product-name">Product: </h2>
+                <p id="product-description">Product description goes here...</p>
+                <p class="price" id="product-price">Price: </p>
+                <button id="buy-now-btn">Buy Now</button>
+            </div>
+
+            <div class="contact-form"  onsubmit="handleContactForm(event)">
+                <h3>Enter Your Details</h3>
+                <form id="order-form">
+                    <label for="name">Name:</label>
+                    <input type="text" id="name" name="name" placeholder="Your Name" required />
+
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" placeholder="Your Email" required />
+
+                    <label for="message">Address:</label>
+                    <textarea id="message" name="message" placeholder="Your Address" rows="5" required></textarea>
+        
+                    <input type="submit" value="Place Order">
+        
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Nora Tech. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const productName = urlParams.get('product');
+        const productPrice = urlParams.get('price');
+        const productImage = urlParams.get('image');
+        const productDescription = urlParams.get('description');
+
+        document.getElementById("product-name").textContent = `Product: ${productName}`;
+        document.getElementById("product-description").textContent = productDescription || "No description available";
+        document.getElementById("product-price").textContent = `Price: $${productPrice}`;
+        document.getElementById("product-image").src = productImage || 'default-image.jpg';
+
+        // Handle confirming the purchase
+        document.getElementById("buy-now-btn").addEventListener("click", () => {
+            alert(`You have purchased the ${productName} for $${productPrice}`);
+            removeProductFromCart(productName);
+        });
+
+        function removeProductFromCart(productName) {
+            let cart = JSON.parse(localStorage.getItem('cart')) || [];
+            cart = cart.filter(item => item.name !== productName);  // Remove product from cart
+            localStorage.setItem('cart', JSON.stringify(cart));  // Save the updated cart
+        }
+
+        async function handleContactForm(event) {
+            event.preventDefault();
+            const form = event.target;
+
+            // Collect form data
+            const name = form.name.value.trim();
+            const email = form.email.value.trim();
+            const message = form.message.value.trim();
+
+            if (!name || !email || !message) {
+                alert("All fields are required.");
+                return;
+            }
+
+            try {
+                // Send data to the server
+                const response = await fetch("https://formspree.io/f/mpwqavlb", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ name, email, message }),
+                });
+
+                if (response.ok) {
+                    alert("Details sent successfully!");
+                    form.reset();
+                } else {
+                    const error = await response.text();
+                    alert(`Failed to send message: ${error}`);
+                }
+            } catch (error) {
+                console.error("Error sending message:", error);
+                alert("An error occurred while sending the message. Please try again later.");
+            }
+        }
+    </script>
+</body>
+</html>
